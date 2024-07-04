@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodePen Post API Example</title>
+</head>
+<body>
+  <form action="https://codepen.io/pen/define" method="POST" target="_blank">
+    <input type="hidden" name="data" id="data">
+    <button type="submit">Create Pen</button>
+  </form>
+
+  <script>
+    const data = {
+      title: "Dynamic Pen",
+      html: "<h1>Hello World</h1>",
+      css: "body { font-family: Arial, sans-serif; } h1 { color: blue; }",
+      js: "console.log('Hello, CodePen!');"
+    };
+
+    document.getElementById('data').value = JSON.stringify(data);
+  </script>
+</body>
+</html>

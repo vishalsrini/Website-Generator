@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Site Generator</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white p-8 rounded shadow-md w-full max-w-2xl">
+    <h1 class="text-2xl font-bold mb-4">Vishal's Site Generator</h1>
+    <textarea id="user-prompt" class="w-full p-2 border border-gray-300 rounded mb-4" rows="15" placeholder="Enter your prompt here..."></textarea>
+    <div class="flex justify-between">
+      <button id="generate-website" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Generate Website</button>
+      <button id="create-pen-button" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 hidden">Create Pen</button>
+    </div>
+    <p id="status" class="mt-4 text-gray-700">Please enter a prompt to generate your website.</p>
+    <form id="create-pen-form" action="https://codepen.io/pen/define" method="POST" target="_blank" class="hidden">
+      <input type="hidden" name="data" id="data">
+    </form>
+  </div>
+
+  <script>
+      var result;
+    document.getElementById('generate-website').addEventListener('click', async function() {
+      const userPrompt = document.getElementById('user-prompt').value;
+      if (!userPrompt) {
+        document.getElementById('status').innerText = 'Please enter a prompt.';
+        return;
+      }
+
+      document.getElementById('status').innerText = 'Generating website...';
+
+      try {
+        const response = await fetch('http://localhost:3000/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ prompt: userPrompt })
+        });
+
+        result = await response.json();
+        if (result.error) {
+          document.getElementById('status').innerText = 'Error generating website: ' + result.error;
+          return;
+        }
+
+        createPen(result.html, result.css, result.js);
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('status').innerText = 'Error generating website.';
+      }
+    });
+
+    document.getElementById('create-pen-button').addEventListener('click', async function() {
+        createPen(result.html, result.css, result.js);
+    });
+
+    function createPen(html, css, js) {
+      const data = {
+        title: "Generated Pen",
+        html: html,
+        css: css,
+        js: js
+      };
+
+      document.getElementById('data').value = JSON.stringify(data);
+      document.getElementById('create-pen-form').classList.remove('hidden');
+      document.getElementById('create-pen-form').submit();
+      document.getElementById('status').innerText = 'Pen created successfully!';
+      document.getElementById('create-pen-button').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
